@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Source utilities
+SOURCE_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SOURCE_DIR/utils.sh"
+
 # Install pyenv
 if [ ! -d "$HOME/.pyenv" ]; then
     echo "Installing pyenv..."
@@ -12,10 +16,86 @@ fi
 # Install devspace
 if ! command -v devspace &> /dev/null; then
     echo "Installing devspace..."
-    curl -L -o devspace "https://github.com/loft-sh/devspace/releases/latest/download/devspace-linux-amd64" && sudo install -c -m 0755 devspace /usr/local/bin
+    curl -L -o devspace "https://github.com/loft-sh/devspace/releases/latest/download/devspace-linux-amd64"
+    sudo install -c -m 0755 devspace /usr/local/bin
+    rm devspace
     echo "devspace installed successfully!"
 else
     echo "devspace is already installed."
+fi
+
+# Install docker
+if ! command -v docker &> /dev/null; then
+    echo "Installing docker..."
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sudo sh get-docker.sh
+    rm get-docker.sh
+    
+    # Add user to docker group
+    echo "Adding $USER to docker group..."
+    sudo usermod -aG docker "$USER"
+    echo "Docker installed successfully! You'll need to log out and back in for group changes to take effect."
+else
+    echo "docker is already installed."
+    # Check if user is in docker group
+    if ! groups "$USER" | grep -q docker; then
+        echo "Adding $USER to docker group..."
+        sudo usermod -aG docker "$USER"
+        echo "You'll need to log out and back in for group changes to take effect."
+    fi
+fi
+
+# Install kubectl
+if ! command -v kubectl &> /dev/null; then
+    echo "Installing kubectl..."
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    rm kubectl
+    echo "kubectl installed successfully!"
+else
+    echo "kubectl is already installed."
+fi
+
+# Install minikube
+if ! command -v minikube &> /dev/null; then
+    echo "Installing minikube..."
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo install minikube /usr/local/bin/
+    rm minikube
+    echo "minikube installed successfully!"
+else
+    echo "minikube is already installed."
+fi
+
+# Install terraform
+if ! command -v terraform &> /dev/null; then
+    echo "Installing terraform..."
+    install_package terraform
+    echo "terraform installed successfully!"
+else
+    echo "terraform is already installed."
+fi
+
+# Install .NET (multiple versions: 7, 8, 9, 10)
+if ! command -v dotnet &> /dev/null || [ ! -d "$HOME/.dotnet" ]; then
+    echo "Installing .NET SDK versions 7, 8, 9, and 10..."
+    
+    # Download and run the dotnet-install script
+    curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
+    chmod +x dotnet-install.sh
+    
+    # Install each version
+    ./dotnet-install.sh --channel 7.0 --install-dir "$HOME/.dotnet"
+    ./dotnet-install.sh --channel 8.0 --install-dir "$HOME/.dotnet"
+    ./dotnet-install.sh --channel 9.0 --install-dir "$HOME/.dotnet"
+    ./dotnet-install.sh --channel 10.0 --install-dir "$HOME/.dotnet"
+    
+    rm dotnet-install.sh
+    
+    echo ".NET SDK 7, 8, 9, and 10 installed successfully!"
+else
+    echo ".NET is already installed."
+    "$HOME/.dotnet/dotnet" --list-sdks 2>/dev/null || dotnet --list-sdks
 fi
 
 # Add work-related configurations to .zshrc
@@ -27,9 +107,14 @@ if [ -f "$ZSHRC" ] && ! grep -q "$WORK_MARKER" "$ZSHRC"; then
     cat >> "$ZSHRC" << 'EOF'
 
 # >>> work tools setup >>>
+# Python environment
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
+
+# .NET
+export DOTNET_ROOT=$HOME/.dotnet
+export PATH=$PATH:$DOTNET_ROOT:$HOME/.dotnet/tools
 
 # devspace aliases and completion
 alias random-tag='(echo $RANDOM | md5sum | head -c 20)'
