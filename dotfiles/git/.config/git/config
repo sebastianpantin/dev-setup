@@ -1,0 +1,11 @@
+[alias]
+	default = !git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
+	co = checkout
+	cm = !git add -A && git commit -m
+	up = !git pull --rebase --prune $@ && git submodule update --init --recursive
+	save = !git add -A && git commit -m 'SAVEPOINT'
+	wip = !git add -u && git commit -m "WIP"
+	pb = !git push -u origin $(git rev-parse --abbrev-ref HEAD)
+	pf = !git push -f
+	bclean = "!f() { DEFAULT=$(git default); git branch --format '%(refname:short) %(upstream)' | awk '{if ($2) print $1;}' | grep -v \"${1-$DEFAULT}$\" | xargs git branch -d -f; }; f"
+	bdone = "!f() { DEFAULT=$(git default); git checkout ${1-$DEFAULT} && git up && git bclean ${1-$DEFAULT}; }; f"
