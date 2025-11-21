@@ -14,6 +14,17 @@ fi
 
 # Install oh-my-zsh
 echo "Installing oh-my-zsh..."
+
+# Backup .zshrc if it exists
+if [ -f "$HOME/.zshrc" ]; then
+    cp "$HOME/.zshrc" "$HOME/.zshrc.backup"
+fi
+
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+# Restore original .zshrc
+if [ -f "$HOME/.zshrc.backup" ]; then
+    mv "$HOME/.zshrc.backup" "$HOME/.zshrc"
+fi
 
 echo "oh-my-zsh installed successfully!"
