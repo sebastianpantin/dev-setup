@@ -13,6 +13,15 @@ else
     echo "pyenv is already installed."
 fi
 
+# Install uv
+if ! command -v uv &> /dev/null; then
+    echo "Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | bash
+    echo "uv installed successfully!"
+else
+    echo "uv is already installed."
+fi
+
 # Install devspace
 if ! command -v devspace &> /dev/null; then
     echo "Installing devspace..."
