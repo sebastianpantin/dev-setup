@@ -23,17 +23,14 @@ alias cat='bat'
 alias ls='exa -l'
 
 # Git aliases and functions
-alias gco='git checkout'
 alias gsave='git add -A && git commit -m "SAVEPOINT"'
-alias gwip='git add -u && git commit -m "WIP"'
-alias gpf='git push -f'
 
 # Git functions
 gdefault() {
     git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
 }
 
-gup() {
+gupall() {
     git pull --rebase --prune "$@" && git submodule update --init --recursive
 }
 
@@ -48,7 +45,7 @@ gbclean() {
 
 gbdone() {
     local DEFAULT=$(gdefault)
-    git checkout "${1-$DEFAULT}" && gup && gbclean "${1-$DEFAULT}"
+    git checkout "${1-$DEFAULT}" && gupall && gbclean "${1-$DEFAULT}"
 }
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
