@@ -7,7 +7,7 @@ if ! command -v zsh &> /dev/null; then
 fi
 
 # Check if oh-my-zsh is already installed
-if [ -d "$HOME/.oh-my-zsh" ]; then
+if [ -d "$HOME/.config/.oh-my-zsh" ]; then
     echo "oh-my-zsh is already installed."
     exit 0
 fi
