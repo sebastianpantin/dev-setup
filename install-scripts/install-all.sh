@@ -7,6 +7,7 @@ echo "Installing all..."
 ./install-zsh.s
 ./install-dotfiles.sh
 ./install-oh-my-zsh.sh
+./install-work-tools.sh
 
 
 echo "Installation done..."
