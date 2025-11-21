@@ -4,7 +4,7 @@ echo "Installing all..."
 
 ./install-cli-tools.sh
 ./install-stow.sh
-./install-zsh.s
+./install-zsh.sh
 ./install-dotfiles.sh
 ./install-oh-my-zsh.sh
 ./install-work-tools.sh
