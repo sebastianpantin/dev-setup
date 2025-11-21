@@ -24,10 +24,6 @@ alias ls='exa -l'
 
 # Git aliases and functions
 alias gco='git checkout'
-gcm() {
-    git add -A && git commit -m "$*"
-}
-
 alias gsave='git add -A && git commit -m "SAVEPOINT"'
 alias gwip='git add -u && git commit -m "WIP"'
 alias gpf='git push -f'
