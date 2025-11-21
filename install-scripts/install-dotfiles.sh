@@ -17,8 +17,9 @@ echo "Removing old configs..."
 for dir in */; do
     if [ -d "$dir" ]; then
         package="${dir%/}"
-        # Remove common config locations for each package
+        # Remove common config locations for each package (both files and directories)
         [ -e "$HOME/.config/$package" ] && rm -rf "$HOME/.config/$package"
+        [ -e "$HOME/.config/$package.toml" ] && rm -f "$HOME/.config/$package.toml"
         [ -e "$HOME/.$package" ] && rm -rf "$HOME/.$package"
         [ -e "$HOME/.local/share/$package" ] && rm -rf "$HOME/.local/share/$package"
         [ -e "$HOME/.cache/$package" ] && rm -rf "$HOME/.cache/$package"
