@@ -24,7 +24,10 @@ alias ls='exa -l'
 
 # Git aliases and functions
 alias gco='git checkout'
-alias gcm='git add -A && git commit -m'
+gcm() {
+    git add -A && git commit -m "$*"
+}
+
 alias gsave='git add -A && git commit -m "SAVEPOINT"'
 alias gwip='git add -u && git commit -m "WIP"'
 alias gpf='git push -f'
@@ -39,17 +42,17 @@ gup() {
 }
 
 gpb() {
-    git push -u origin $(git rev-parse --abbrev-ref HEAD)
+    git push -u origin "$(git rev-parse --abbrev-ref HEAD)"
 }
 
 gbclean() {
     local DEFAULT=$(gdefault)
-    git branch --format '%(refname:short) %(upstream)' | awk '{if ($2) print $1;}' | grep -v "${1-$DEFAULT}$" | xargs git branch -d -f
+    git branch --format '%(refname:short) %(upstream)' | awk '{if ($2) print $1;}' | grep -v "${1-$DEFAULT}\$" | xargs git branch -d -f
 }
 
 gbdone() {
     local DEFAULT=$(gdefault)
-    git checkout ${1-$DEFAULT} && gup && gbclean ${1-$DEFAULT}
+    git checkout "${1-$DEFAULT}" && gup && gbclean "${1-$DEFAULT}"
 }
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
