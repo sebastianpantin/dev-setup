@@ -80,6 +80,19 @@ fi
 if ! command -v dotnet &> /dev/null || [ ! -d "$HOME/.dotnet" ]; then
     echo "Installing .NET SDK versions 7, 8, 9, and 10..."
     
+    # Install dependencies
+    echo "Installing .NET dependencies..."
+    if command -v apt &> /dev/null; then
+        sudo apt update
+        sudo apt install -y libc6 libgcc-s1 libgssapi-krb5-2 libicu-dev libssl-dev libstdc++6 zlib1g
+    else
+        # For Arch, these packages have different names
+        install_package icu
+        install_package krb5
+        install_package openssl
+        install_package zlib
+    fi
+    
     # Download and run the dotnet-install script
     curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
     chmod +x dotnet-install.sh
