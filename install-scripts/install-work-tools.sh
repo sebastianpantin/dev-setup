@@ -22,6 +22,14 @@ else
     echo "uv is already installed."
 fi
 
+# Install Azure CLI
+if ! command -v az &> /dev/null; then
+    echo "Installing Azure CLI..."
+    install_package azure-cli
+    echo "Azure CLI installed successfully"
+else
+    echo "Azure CLI is already installed"
+fi
 # Install devspace
 if ! command -v devspace &> /dev/null; then
     echo "Installing devspace..."
@@ -36,10 +44,7 @@ fi
 # Install docker
 if ! command -v docker &> /dev/null; then
     echo "Installing docker..."
-    curl -fsSL https://get.docker.com -o get-docker.sh
-    sudo sh get-docker.sh
-    rm get-docker.sh
-    
+    install_package docker 
     # Add user to docker group
     echo "Adding $USER to docker group..."
     sudo usermod -aG docker "$USER"
@@ -50,14 +55,14 @@ else
     if ! groups "$USER" | grep -q docker; then
         echo "Adding $USER to docker group..."
         sudo usermod -aG docker "$USER"
-        echo "You'll need to log out and back in for group changes to take effect."
+echo "You'll need to log out and back in for group changes to take effect."
     fi
 fi
 
 # Install kubectl
 if ! command -v kubectl &> /dev/null; then
     echo "Installing kubectl..."
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    curl -LO "https://dl.k8s.io/release/v1.34.0/bin/linux/amd64/kubectl"
     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
     rm kubectl
     echo "kubectl installed successfully!"
@@ -68,9 +73,8 @@ fi
 # Install minikube
 if ! command -v minikube &> /dev/null; then
     echo "Installing minikube..."
-    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-    sudo install minikube /usr/local/bin/
-    rm minikube
+    curl -LO https://storage.googleapis.com/minikube/releases/v1.33.1/minikube-linux-amd64
+    sudo install minikube-linux-amd64 /usr/bin/minikube && rm minikube-linux-amd64
     echo "minikube installed successfully!"
 else
     echo "minikube is already installed."
