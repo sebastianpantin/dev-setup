@@ -22,6 +22,15 @@ else
     echo "uv is already installed."
 fi
 
+# Install git
+if ! command -v git &> /dev/null; then
+    echo "Installing git..."
+    install_package git
+    echo "git installed successfully"
+else
+    echo "git is already installed"
+fi
+
 # Install Azure CLI
 if ! command -v az &> /dev/null; then
     echo "Installing Azure CLI..."
