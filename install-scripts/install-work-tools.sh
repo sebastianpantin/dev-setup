@@ -4,6 +4,25 @@
 SOURCE_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SOURCE_DIR/utils.sh"
 
+# Install fnm (Fast Node Manager)
+if ! command -v fnm &> /dev/null; then
+    echo "Installing fnm..."
+    curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
+    echo "fnm (Node version manager) installed successfully!"
+    
+    # Set up fnm environment for this script
+    export PATH="$HOME/.local/share/fnm:$PATH"
+    eval "$(fnm env --use-on-cd)"
+    
+    # Install Node.js LTS
+    echo "Installing Node.js LTS..."
+    fnm install --lts
+    fnm default lts-latest
+    echo "Node.js LTS installed and set as default!"
+else
+    echo "fnm (Node version manager) is already installed."
+fi
+
 # Install pyenv
 if [ ! -d "$HOME/.pyenv" ]; then
     echo "Installing pyenv..."
@@ -133,15 +152,18 @@ else
     "$HOME/.dotnet/dotnet" --list-sdks 2>/dev/null || dotnet --list-sdks
 fi
 
-# Add work-related configurations to .zshrc
-ZSHRC="$HOME/.zshrc"
+# Add work-related configurations to .zshrc.local
+ZSHRC_LOCAL="$HOME/.zshrc.local"
 WORK_MARKER="# >>> work tools setup >>>"
 
-if [ -f "$ZSHRC" ] && ! grep -q "$WORK_MARKER" "$ZSHRC"; then
-    echo "Adding work tools configuration to .zshrc..."
-    cat >> "$ZSHRC" << 'EOF'
-
+if [ ! -f "$ZSHRC_LOCAL" ] || ! grep -q "$WORK_MARKER" "$ZSHRC_LOCAL"; then
+    echo "Creating work tools configuration in .zshrc.local..."
+    cat > "$ZSHRC_LOCAL" << 'EOF'
 # >>> work tools setup >>>
+# Node.js environment (fnm)
+export PATH="$HOME/.local/share/fnm:$PATH"
+eval "$(fnm env --use-on-cd)"
+
 # Python environment
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
@@ -161,9 +183,9 @@ export COMPOSE_DOCKER_CLI_BUILD=1
 export DOCKER_BUILDKIT=1
 # <<< work tools setup <<<
 EOF
-    echo "Work tools configuration added to .zshrc"
+    echo "Work tools configuration created in .zshrc.local"
 else
-    echo "Work tools configuration already exists in .zshrc"
+    echo "Work tools configuration already exists in .zshrc.local"
 fi
 
 echo "All work tools installed successfully!"
