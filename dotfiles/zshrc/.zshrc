@@ -49,3 +49,6 @@ gbdone() {
 }
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Source local machine-specific configuration if it exists
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
