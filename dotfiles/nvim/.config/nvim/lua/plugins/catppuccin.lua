@@ -3,12 +3,12 @@ return {
 		"catppuccin/nvim",
 		name = "catppuccin",
 		build = ":CatppuccinCompile",
-		opts = {
+		opt = {
 			setup = {
-				flavour = "macchiato", -- latte, frappe, macchiato, mocha
+				flavour = "mocha", -- latte, frappe, macchiato, mocha
 				background = { -- :h background
 					light = "latte",
-					dark = "macchiato",
+					dark = "mocha",
 				},
 				compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
 				dim_inactive = {
