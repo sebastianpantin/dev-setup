@@ -4,6 +4,15 @@
 SOURCE_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SOURCE_DIR/utils.sh"
 
+# Install just
+if ! command -v just &> /dev/null; then
+    echo "Installing just..."
+    install_package just
+    echo "just installed successfully!"
+else
+    echo "just is already installed."
+fi
+
 # Install fnm (Fast Node Manager)
 if ! command -v fnm &> /dev/null; then
     echo "Installing fnm..."
