@@ -28,6 +28,7 @@ end
 return {
 	{
 		"neovim/nvim-lspconfig",
+		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
@@ -52,7 +53,11 @@ return {
 			require("neodev").setup()
 			-- Diagnostic config
 			local config = {
-				virtual_text = false,
+				virtual_text = {
+					spacing = 4,
+					prefix = '●',
+					severity = { min = vim.diagnostic.severity.WARN },
+				},
 				signs = {
 					text = constants.diagnostic_signs.text,
 				},
@@ -95,6 +100,18 @@ return {
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 			capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
+			-- Set up single autocmd for LspAttach (outside the loop to avoid duplicates)
+			if vim.lsp.config then
+				vim.api.nvim_create_autocmd("LspAttach", {
+					callback = function(args)
+						local client = vim.lsp.get_client_by_id(args.data.client_id)
+						if client then
+							on_attach(client, args.buf)
+						end
+					end,
+				})
+			end
+
 			-- Use new vim.lsp.config API for Neovim 0.11+
 			for _, server in pairs(servers) do
 				local opts = {
@@ -111,16 +128,6 @@ return {
 				if vim.lsp.config then
 					-- Use new API for Neovim 0.11+
 					vim.lsp.config(server, opts)
-
-					-- Set up autocmd to attach when LSP connects
-					vim.api.nvim_create_autocmd("LspAttach", {
-						callback = function(args)
-							local client = vim.lsp.get_client_by_id(args.data.client_id)
-							if client and client.name == server then
-								on_attach(client, args.buf)
-							end
-						end,
-					})
 				else
 					-- Fallback for older Neovim versions
 					opts.on_attach = on_attach
