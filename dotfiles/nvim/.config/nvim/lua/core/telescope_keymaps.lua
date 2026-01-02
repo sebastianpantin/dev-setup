@@ -12,7 +12,6 @@ M.setup = function()
 	map("n", "<leader>sh", builtin.help_tags, "Help")
 	map("n", "<leader>sw", builtin.grep_string, "Current word")
 	map("n", "<leader>sg", builtin.live_grep, "Grep")
-	map("n", "<leader>fs", ":Telescope aerial <CR>", "Symbols")
 	map("n", "<leader>sd", builtin.diagnostics, "Diagnostics")
 	map("n", "<C-p>", builtin.keymaps, "Search keymaps")
 end

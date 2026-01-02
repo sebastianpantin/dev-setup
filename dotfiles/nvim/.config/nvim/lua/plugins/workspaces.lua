@@ -1,5 +1,6 @@
 return {
 	"natecraddock/workspaces.nvim",
+	event = "VeryLazy",
 	opts = {},
 	config = function(_, opts)
 		require("workspaces").setup(opts)

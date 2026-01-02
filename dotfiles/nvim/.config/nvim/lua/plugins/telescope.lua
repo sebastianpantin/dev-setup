@@ -7,7 +7,6 @@ return {
 			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make", lazy = true },
 		},
 		config = function()
-			require("telescope").load_extension("aerial")
 			require("telescope").setup({
 				defaults = {
 					preview = false,
@@ -18,21 +17,14 @@ return {
 						},
 					},
 				},
-				extensions = {
-					aerial = {
-						show_nesting = {
-							["_"] = false,
-							json = true,
-							yaml = true,
-						},
-					},
-				},
 			})
 
 			pcall(require("telescope").load_extension, "fzf")
 
-			-- Load keymaps from separate module for easier maintenance
-			require("core.telescope_keymaps").setup()
+			-- Defer keymaps to speed up startup
+			vim.schedule(function()
+				require("core.telescope_keymaps").setup()
+			end)
 		end,
 	},
 }

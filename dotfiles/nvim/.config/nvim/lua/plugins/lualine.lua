@@ -5,6 +5,7 @@ end
 return {
 	{
 		"nvim-lualine/lualine.nvim",
+		event = "VeryLazy",
 		config = function()
 			local colorscheme = require("helpers.colorscheme")
 			local lualine_theme = colorscheme == "default" and "auto" or colorscheme

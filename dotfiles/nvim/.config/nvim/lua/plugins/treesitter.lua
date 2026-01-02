@@ -1,6 +1,8 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		event = { "BufReadPost", "BufNewFile" },
+		branch = "master",
 		build = function()
 			pcall(require("nvim-treesitter.install").update({ with_sync = true }))
 		end,
@@ -29,6 +31,7 @@ return {
 					"rust",
 					"ron",
 					"toml",
+					"fsharp",
 				},
 
 				highlight = { enable = true },

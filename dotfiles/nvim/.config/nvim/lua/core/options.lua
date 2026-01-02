@@ -3,6 +3,8 @@ local opts = {
 	tabstop = 4,
 	expandtab = true,
 	wrap = false,
+	linebreak = false,
+	textwidth = 0,
 	termguicolors = true,
 	number = true,
 	relativenumber = true,
@@ -17,7 +19,7 @@ local opts = {
 	splitright = true,
 	cursorline = true,
 	signcolumn = "yes",
-	scrolloff = 0,
+	scrolloff = 8,
 	sidescrolloff = 8,
 }
 
