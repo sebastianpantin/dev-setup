@@ -180,7 +180,8 @@ eval "$(pyenv init -)"
 
 # .NET
 export DOTNET_ROOT=$HOME/.dotnet
-export PATH=$PATH:$DOTNET_ROOT:$HOME/.dotnet/tools
+export PATH=$DOTNET_ROOT:$PATH
+export PATH=$DOTNET_ROOT:$HOME/.dotnet/tools:$PATH
 
 # devspace aliases and completion
 alias random-tag='(echo $RANDOM | md5sum | head -c 20)'
