@@ -1,6 +1,6 @@
 local M = {}
 
--- LSP servers to install and configure
+-- LSP server names (for vim.lsp.enable)
 M.lsp_servers = {
 	"lua_ls",
 	"pylsp",
@@ -12,6 +12,29 @@ M.lsp_servers = {
 	"fsautocomplete",
 	"vtsls",
 	"eslint",
+}
+
+-- Mason package names (for mason-tool-installer)
+M.mason_packages = {
+	-- LSP servers
+	"lua-language-server",
+	"python-lsp-server",
+	"ruff",
+	"csharp-language-server",
+	"dockerfile-language-server",
+	"terraform-ls",
+	"yaml-language-server",
+	"fsautocomplete",
+	"vtsls",
+	"eslint-lsp",
+	-- Formatters & linters
+	"stylua",
+	"prettierd",
+	"mypy",
+	"fantomas",
+	"yamlfix",
+	-- Debug adapters
+	"codelldb",
 }
 
 -- File types to exclude from certain features

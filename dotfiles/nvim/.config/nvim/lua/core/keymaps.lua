@@ -1,20 +1,19 @@
 local map = require("helpers.keys").map
 
 -- Diagnostics
-local diagnostic_goto = function(next, severity)
-	local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
+local diagnostic_jump = function(count, severity)
 	severity = severity and vim.diagnostic.severity[severity] or nil
 	return function()
-		go({ severity = severity })
+		vim.diagnostic.jump({ count = count, severity = severity })
 	end
 end
 map("n", "<leader>cd", vim.diagnostic.open_float, "Line Diagnostics")
-map("n", "]d", diagnostic_goto(true), "Next Diagnostic")
-map("n", "[d", diagnostic_goto(false), "Prev Diagnostic")
-map("n", "]e", diagnostic_goto(true, "ERROR"), "Next Error")
-map("n", "[e", diagnostic_goto(false, "ERROR"), "Prev Error")
-map("n", "]w", diagnostic_goto(true, "WARN"), "Next Warning")
-map("n", "[w", diagnostic_goto(false, "WARN"), "Prev Warning")
+map("n", "]d", diagnostic_jump(1), "Next Diagnostic")
+map("n", "[d", diagnostic_jump(-1), "Prev Diagnostic")
+map("n", "]e", diagnostic_jump(1, "ERROR"), "Next Error")
+map("n", "[e", diagnostic_jump(-1, "ERROR"), "Prev Error")
+map("n", "]w", diagnostic_jump(1, "WARN"), "Next Warning")
+map("n", "[w", diagnostic_jump(-1, "WARN"), "Prev Warning")
 
 -- Navigate buffers
 map("n", "<S-l>", ":bnext<CR>")
