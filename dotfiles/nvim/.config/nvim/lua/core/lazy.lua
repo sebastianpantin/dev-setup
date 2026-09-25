@@ -31,7 +31,8 @@ lazy.setup({
 		version = false,
 	},
 	install = { colorscheme = { "catppuccin" } },
-	checker = { enabled = true, notify = false },
+	-- No update checks when running the test suite (see tests/run.sh)
+	checker = { enabled = not vim.env.NVIM_CONFIG_TEST, notify = false },
 	performance = {
 		rtp = {
 			-- disable some rtp plugins

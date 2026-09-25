@@ -1,37 +1,8 @@
 -- Smoke tests for the config. Loaded with `--cmd` (before init.lua) so that
 -- errors raised during startup are captured too. Run via tests/run.sh.
 
-local errors = {}
-
--- Plugins like noice.nvim replace vim.notify, which would hide errors from a
--- plain wrapper. Instead, keep our wrapper permanently in front: any later
--- assignment to vim.notify only swaps the function it forwards to.
-local notify = rawget(vim, "notify")
--- Sources whose errors depend on the machine (network, npm, ...) rather than
--- on the config itself.
-local ignored_titles = { ["mason-tool-installer"] = true }
-local function capture_notify(msg, level, opts)
-	if level and level >= vim.log.levels.ERROR and not ignored_titles[(opts or {}).title] then
-		table.insert(errors, tostring(msg))
-	end
-	return notify(msg, level, opts)
-end
-rawset(vim, "notify", nil)
-local mt = getmetatable(vim)
-local index = mt.__index
-mt.__index = function(t, k)
-	if k == "notify" then
-		return capture_notify
-	end
-	return type(index) == "function" and index(t, k) or index[k]
-end
-mt.__newindex = function(t, k, v)
-	if k == "notify" then
-		notify = v
-	else
-		rawset(t, k, v)
-	end
-end
+dofile(vim.fn.getcwd() .. "/tests/errors.lua")
+local errors = _G.config_test_errors
 
 -- Collect errors raised while running `fn`, including async ones that surface
 -- shortly after (lazy.nvim reports plugin config errors via vim.notify).
