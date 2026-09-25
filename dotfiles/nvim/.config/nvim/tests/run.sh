@@ -80,7 +80,9 @@ MINI_TEST_DIR="$ENV_DIR/deps/mini.test"
 checkout https://github.com/nvim-mini/mini.test.git "$MINI_TEST_DIR" "$MINI_TEST_COMMIT"
 
 echo "==> Syncing plugins to lazy-lock.json"
-step nvim --headless "+Lazy! restore" "+lua require('nvim-treesitter.install').ensure_installed_sync()" +qa
+step nvim --headless "+Lazy! restore" +qa
+echo "==> Installing treesitter parsers"
+step nvim --headless -c "luafile $XDG_CONFIG_HOME/nvim/tests/setup_parsers.lua"
 
 MISSING_TOOLS=()
 for tool in "${MASON_TOOLS[@]}"; do

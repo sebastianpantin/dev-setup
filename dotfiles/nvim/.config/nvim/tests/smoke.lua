@@ -115,7 +115,9 @@ local function run()
 		local langs = require("lazy.core.plugin").values(spec, "opts", false).ensure_installed
 		local missing = {}
 		for _, lang in ipairs(langs) do
-			if not pcall(vim.treesitter.language.add, lang) then
+			-- language.add returns (nil, err) on failure rather than raising
+			local ok, added = pcall(vim.treesitter.language.add, lang)
+			if not (ok and added) then
 				table.insert(missing, lang)
 			end
 		end
