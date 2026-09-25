@@ -63,6 +63,8 @@ return {
 		lazy = false,
 		opts = {
 			ensure_installed = constants.mason_packages,
+			-- The test suite installs only the tools it needs (see tests/run.sh)
+			run_on_start = not vim.env.NVIM_CONFIG_TEST,
 		},
 	},
 	{

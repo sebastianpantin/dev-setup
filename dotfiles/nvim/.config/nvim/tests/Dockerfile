@@ -1,14 +1,15 @@
 # Test environment for this Neovim config. Build context is the config dir:
 #   docker build -f tests/Dockerfile -t nvim-config-test .
-# Plugins and treesitter parsers are baked into the image, so a test run only
-# has to copy in the config and start Neovim. See tests/docker.sh.
+# Plugins, treesitter parsers and the Mason tools the tests use are baked into
+# the image, so a test run only has to copy in the config and start Neovim.
+# See tests/docker.sh.
 FROM ubuntu:24.04
 
 # git + compiler: plugin installs, telescope-fzf-native (make) and treesitter
-# parsers. ripgrep: telescope live_grep.
+# parsers. ripgrep: telescope. unzip: Mason packages (stylua).
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
-		build-essential ca-certificates curl git ripgrep \
+		build-essential ca-certificates curl git ripgrep unzip \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Pinned to the version used locally; Ubuntu's own package is far too old.
@@ -23,4 +24,4 @@ COPY . /config
 RUN tests/run.sh --setup-only
 
 # Mount a working copy over /config to test uncommitted changes.
-CMD ["tests/run.sh"]
+CMD ["tests/run.sh", "--all"]
