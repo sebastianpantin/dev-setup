@@ -41,6 +41,15 @@ end
 local deprecated_health = require("vim.deprecated.health")
 local add = deprecated_health.add
 local seen = {}
+
+-- Known deprecated calls in plugins that have no upstream fix yet. Keep this
+-- list short, and remove entries once the plugin is fixed.
+local allowed = {
+	-- noice.nvim (latest upstream as of 2026-09) calls the old form when it
+	-- renders a notification through nvim-notify. Removed in Neovim 1.0.
+	{ name = "vim.str_utfindex", caller = "noice.nvim/lua/noice/view/backend/notify.lua" },
+}
+
 deprecated_health.add = function(name, version, backtrace, alternative)
 	local caller = "unknown caller"
 	for line in tostring(backtrace):gmatch("[^\n]+") do
@@ -49,8 +58,11 @@ deprecated_health.add = function(name, version, backtrace, alternative)
 			break
 		end
 	end
+	local is_allowed = vim.iter(allowed):any(function(a)
+		return a.name == name and caller:find(a.caller, 1, true) ~= nil
+	end)
 	local entry = ("deprecated: %s (use %s), called from %s"):format(name, alternative or "?", caller)
-	if not seen[entry] then
+	if not is_allowed and not seen[entry] then
 		seen[entry] = true
 		table.insert(_G.config_test_errors, entry)
 	end
