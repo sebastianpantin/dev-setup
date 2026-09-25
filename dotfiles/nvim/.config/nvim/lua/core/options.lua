@@ -1,3 +1,6 @@
+-- OSC 52 clipboard in tmux/SSH sessions (installed by an Omarchy migration)
+require("config.remote_clipboard").setup()
+
 local opts = {
 	shiftwidth = 4,
 	tabstop = 4,
