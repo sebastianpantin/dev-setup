@@ -180,10 +180,17 @@ local function run()
 		eq(bad, {}, "LSP problems")
 	end)
 
-	test("lsp/*.lua override files return tables", function()
+	test("rust_analyzer picks up lsp/rust_analyzer.lua", function()
+		eq(vim.lsp.config.rust_analyzer.settings["rust-analyzer"].check.command, "clippy", "check.command")
+	end)
+
+	test("lsp/*.lua overrides are tables for enabled servers", function()
 		for _, file in ipairs(vim.api.nvim_get_runtime_file("lsp/*.lua", true)) do
 			if vim.startswith(file, vim.fn.stdpath("config")) then
 				eq(type(dofile(file)), "table", file)
+				-- An override for a server that is never enabled is dead config
+				local name = vim.fn.fnamemodify(file, ":t:r")
+				assert(vim.lsp.is_enabled(name), name .. " has lsp/" .. name .. ".lua but isn't in lsp_servers")
 			end
 		end
 	end)
