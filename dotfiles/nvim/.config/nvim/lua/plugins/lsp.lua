@@ -43,9 +43,6 @@ local function on_lsp_attach(args)
 	if client:supports_method("textDocument/inlayHint") then
 		vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
 	end
-
-	-- Illuminate
-	require("illuminate").on_attach(client)
 end
 
 return {
