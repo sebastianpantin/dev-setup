@@ -108,11 +108,11 @@ local function run()
 		vim.cmd.edit(vim.fn.fnameescape(vim.fn.stdpath("config") .. "/init.lua"))
 		eq(vim.bo.filetype, "lua", "filetype")
 		assert(vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()], "no treesitter highlighter attached")
+		eq(vim.bo.indentexpr, "v:lua.require'nvim-treesitter'.indentexpr()", "indentexpr")
 	end)
 
-	test("treesitter parsers from ensure_installed are available", function()
-		local spec = require("lazy.core.config").plugins["nvim-treesitter"]
-		local langs = require("lazy.core.plugin").values(spec, "opts", false).ensure_installed
+	test("configured treesitter parsers are available", function()
+		local langs = require("core.constants").treesitter_parsers
 		local missing = {}
 		for _, lang in ipairs(langs) do
 			-- language.add returns (nil, err) on failure rather than raising
