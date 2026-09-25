@@ -12,6 +12,7 @@ M.lsp_servers = {
 	"fsautocomplete",
 	"vtsls",
 	"eslint",
+	"rust_analyzer",
 }
 
 -- Mason package names (for mason-tool-installer)
@@ -27,6 +28,7 @@ M.mason_packages = {
 	"fsautocomplete",
 	"vtsls",
 	"eslint-lsp",
+	"rust-analyzer",
 	-- Formatters & linters
 	"stylua",
 	"prettierd",
