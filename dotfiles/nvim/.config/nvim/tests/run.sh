@@ -82,6 +82,9 @@ checkout https://github.com/nvim-mini/mini.test.git "$MINI_TEST_DIR" "$MINI_TEST
 echo "==> Syncing plugins to lazy-lock.json"
 step nvim --headless "+Lazy! restore" +qa
 echo "==> Installing treesitter parsers"
+# The restore step also starts parser installs, which +qa cuts short; their
+# half-finished downloads would make the real install fail (ENOTEMPTY).
+rm -rf "$XDG_CACHE_HOME"/nvim/tree-sitter-*
 step nvim --headless -c "luafile $XDG_CONFIG_HOME/nvim/tests/setup_parsers.lua"
 
 MISSING_TOOLS=()
