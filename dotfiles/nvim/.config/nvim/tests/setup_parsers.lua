@@ -1,24 +1,21 @@
--- Installs every parser in the config's treesitter ensure_installed and waits
--- until all are built, so tests never trigger parser installs of their own.
+-- Installs every parser in core.constants.treesitter_parsers and waits until
+-- all are built, so tests never trigger parser installs of their own.
 -- Run by tests/run.sh during setup.
 
-local spec = require("lazy.core.config").plugins["nvim-treesitter"]
-local langs = require("lazy.core.plugin").values(spec, "opts", false).ensure_installed
+local parsers = require("core.constants").treesitter_parsers
 
--- Loading the plugin runs its setup, which starts async installs of missing parsers
-require("lazy").load({ plugins = { "nvim-treesitter" } })
-local install_dir = require("nvim-treesitter.configs").get_parser_install_dir()
+-- The config already started installing these; install() waits on those too
+local ok, err = pcall(function()
+	require("nvim-treesitter").install(parsers):wait(10 * 60 * 1000)
+end)
 
-local function missing()
-	return vim.tbl_filter(function(lang)
-		return vim.fn.filereadable(install_dir .. "/" .. lang .. ".so") == 0
-	end, langs)
-end
+local installed = require("nvim-treesitter.config").get_installed("parsers")
+local missing = vim.tbl_filter(function(lang)
+	return not vim.list_contains(installed, lang)
+end, parsers)
 
-if not vim.wait(10 * 60 * 1000, function()
-	return #missing() == 0
-end, 500) then
-	io.stdout:write("Treesitter parsers not installed: " .. table.concat(missing(), ", ") .. "\n")
+if not ok or #missing > 0 then
+	io.stdout:write(("Treesitter parsers not installed: %s\n%s\n"):format(table.concat(missing, ", "), err or ""))
 	io.stdout:flush()
 	os.exit(1)
 end

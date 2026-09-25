@@ -37,6 +37,30 @@ M.mason_packages = {
 	"codelldb",
 }
 
+-- Treesitter parsers to install
+M.treesitter_parsers = {
+	"c_sharp",
+	"graphql",
+	"bash",
+	"html",
+	"javascript",
+	"json",
+	"lua",
+	"markdown",
+	"markdown_inline",
+	"python",
+	"query",
+	"regex",
+	"tsx",
+	"typescript",
+	"vim",
+	"yaml",
+	"rust",
+	"ron",
+	"toml",
+	"fsharp",
+}
+
 -- File types to exclude from certain features
 M.excluded_filetypes = {
 	"help",

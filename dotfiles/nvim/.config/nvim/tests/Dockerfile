@@ -18,6 +18,12 @@ RUN curl -fsSL "https://github.com/neovim/neovim/releases/download/${NVIM_VERSIO
 		| tar -xz -C /opt \
 	&& ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 
+# nvim-treesitter (main branch) builds parsers with the tree-sitter CLI
+ARG TREE_SITTER_VERSION=v0.26.9
+RUN curl -fsSL "https://github.com/tree-sitter/tree-sitter/releases/download/${TREE_SITTER_VERSION}/tree-sitter-linux-x64.gz" \
+		| gunzip > /usr/local/bin/tree-sitter \
+	&& chmod +x /usr/local/bin/tree-sitter
+
 ENV NVIM_TEST_ENV=/test-env
 WORKDIR /config
 COPY . /config
