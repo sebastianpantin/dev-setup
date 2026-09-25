@@ -1,6 +1,7 @@
--- Records every error-level vim.notify call in _G.config_test_errors, and every
--- notification (for debugging failed tests) in _G.config_test_messages. Load it
--- with `--cmd` (before init.lua) so errors raised during startup count too.
+-- Records every error-level vim.notify call and every call to a deprecated
+-- Neovim API in _G.config_test_errors, and every notification (for debugging
+-- failed tests) in _G.config_test_messages. Load it with `--cmd` (before
+-- init.lua) so errors raised during startup count too.
 --
 -- Plugins like noice.nvim replace vim.notify, which would hide errors from a
 -- plain wrapper. Instead, keep our wrapper permanently in front: any later
@@ -32,4 +33,26 @@ mt.__newindex = function(t, k, v)
 	else
 		rawset(t, k, v)
 	end
+end
+
+-- Deprecated Neovim APIs only warn once per session (and via echo, not
+-- vim.notify), but every call is recorded for :checkhealth vim.deprecated.
+-- Hook that instead, naming the first caller outside Neovim's runtime.
+local deprecated_health = require("vim.deprecated.health")
+local add = deprecated_health.add
+local seen = {}
+deprecated_health.add = function(name, version, backtrace, alternative)
+	local caller = "unknown caller"
+	for line in tostring(backtrace):gmatch("[^\n]+") do
+		if line:find("%.lua:%d+") and not line:find(vim.env.VIMRUNTIME, 1, true) then
+			caller = vim.trim(line)
+			break
+		end
+	end
+	local entry = ("deprecated: %s (use %s), called from %s"):format(name, alternative or "?", caller)
+	if not seen[entry] then
+		seen[entry] = true
+		table.insert(_G.config_test_errors, entry)
+	end
+	return add(name, version, backtrace, alternative)
 end

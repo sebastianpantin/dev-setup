@@ -55,6 +55,14 @@ T["gd jumps to the definition"] = function()
 	H.wait_for(child, "vim.api.nvim_win_get_cursor(0)[1] == 1", LSP_TIMEOUT)
 end
 
+T["vim-illuminate highlights references via LSP"] = function()
+	open_with_lsp(main_file)
+	child.api.nvim_win_set_cursor(0, { 1, 15 }) -- on `greet` in its definition
+	H.wait_for(child, "select(2, require('illuminate.engine').get_provider(0)) == 'lsp'", LSP_TIMEOUT)
+	-- The definition and the call both get a highlight extmark
+	H.wait_for(child, [[#vim.api.nvim_buf_get_extmarks(0, vim.api.nvim_create_namespace("illuminate.highlight"), 0, -1, {}) == 2]], LSP_TIMEOUT)
+end
+
 T["<leader>cf formats with stylua"] = function()
 	open_with_lsp(main_file)
 	child.set_lines({ "local   t = {1,2,3}" }) -- only the buffer changes, the file isn't saved
