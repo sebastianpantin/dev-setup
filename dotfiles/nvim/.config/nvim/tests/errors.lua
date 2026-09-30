@@ -25,7 +25,10 @@ mt.__index = function(t, k)
 	if k == "notify" then
 		return capture_notify
 	end
-	return type(index) == "function" and index(t, k) or index[k]
+	if type(index) == "function" then
+		return index(t, k)
+	end
+	return index[k]
 end
 mt.__newindex = function(t, k, v)
 	if k == "notify" then
