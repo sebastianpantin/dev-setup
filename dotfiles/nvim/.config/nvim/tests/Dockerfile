@@ -24,6 +24,22 @@ RUN curl -fsSL "https://github.com/tree-sitter/tree-sitter/releases/download/${T
 		| gunzip > /usr/local/bin/tree-sitter \
 	&& chmod +x /usr/local/bin/tree-sitter
 
+# Rust toolchain for the rust-analyzer tests: cargo loads the fixture crate,
+# rust-src provides the standard library sources, and clippy is the check
+# command set in lsp/rust_analyzer.lua. Ubuntu's packages lag far behind the
+# releases rust-analyzer supports, so install a pinned one with rustup.
+# rust-analyzer itself comes from Mason unpinned (see MASON_TOOLS in
+# tests/run.sh), so this may need bumping when a new one drops old toolchains.
+ARG RUSTUP_VERSION=1.29.1
+ARG RUST_VERSION=1.98.0
+ENV RUSTUP_HOME=/opt/rustup CARGO_HOME=/opt/cargo PATH=/opt/cargo/bin:$PATH
+RUN curl -fsSL -o /tmp/rustup-init \
+		"https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/x86_64-unknown-linux-gnu/rustup-init" \
+	&& chmod +x /tmp/rustup-init \
+	&& /tmp/rustup-init -y --no-modify-path --profile minimal \
+		--default-toolchain "${RUST_VERSION}" --component clippy,rust-src \
+	&& rm /tmp/rustup-init
+
 ENV NVIM_TEST_ENV=/test-env
 WORKDIR /config
 COPY . /config
