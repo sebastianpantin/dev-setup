@@ -145,6 +145,54 @@ local function run()
 		eq(missing, {}, "missing parsers")
 	end)
 
+	test("treesitter highlights every configured language", function()
+		-- Only ever injected into other languages, so there is no filetype to open
+		local injected_only = { markdown_inline = true, regex = true }
+		local filetypes = vim.fn.getcompletion("", "filetype")
+		local bad = {}
+		local function client_ids()
+			return vim.tbl_map(function(c)
+				return c.id
+			end, vim.lsp.get_clients())
+		end
+		local clients_before = client_ids()
+		-- Setting a filetype also starts its enabled LSP servers, which would keep
+		-- running (and notifying) for the rest of the run; don't let them start
+		local lsp_start = vim.lsp.start
+		vim.lsp.start = function() end
+		local ok, err = pcall(function()
+			for _, lang in ipairs(require("core.constants").treesitter_parsers) do
+				local ok, query = pcall(vim.treesitter.query.get, lang, "highlights")
+				if not (ok and query) then
+					table.insert(bad, ("%s: highlights query: %s"):format(lang, tostring(query)))
+				elseif not injected_only[lang] then
+					-- Prefer the filetype Neovim knows (cs for c_sharp); ron and fsharp have none
+					local fts = vim.treesitter.language.get_filetypes(lang)
+					table.sort(fts)
+					local ft = vim.iter(fts):find(function(f)
+						return vim.list_contains(filetypes, f)
+					end) or lang
+					vim.cmd.enew()
+					local buf = vim.api.nvim_get_current_buf()
+					local found = capture(function()
+						vim.bo[buf].filetype = ft
+					end)
+					local highlighter = vim.treesitter.highlighter.active[buf]
+					if #found > 0 then
+						table.insert(bad, ("%s (%s): %s"):format(lang, ft, table.concat(found, "; ")))
+					elseif not (highlighter and highlighter.tree:lang() == lang) then
+						table.insert(bad, ("%s (%s): no highlighter attached"):format(lang, ft))
+					end
+					vim.cmd.bwipeout({ bang = true })
+				end
+			end
+		end)
+		vim.lsp.start = lsp_start
+		assert(ok, err)
+		eq(bad, {}, "treesitter highlighting problems")
+		eq(client_ids(), clients_before, "LSP clients")
+	end)
+
 	test("colorscheme is catppuccin", function()
 		eq(vim.g.colors_name, "catppuccin-mocha", "colors_name")
 	end)
