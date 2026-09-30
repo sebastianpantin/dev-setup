@@ -270,6 +270,45 @@ local function run()
 		eq(conform.formatters_by_ft.typescript, { "prettierd" }, "typescript formatter")
 	end)
 
+	test("every LSP server is installed by a Mason package", function()
+		local constants = require("core.constants")
+		local registry = require("mason-registry")
+		-- Downloaded by tests/run.sh; get_package() only reads that local copy
+		assert(registry.sources:is_all_installed(), "Mason registry is not installed")
+		local unknown, provided = {}, {}
+		for _, name in ipairs(constants.mason_packages) do
+			local ok, pkg = pcall(registry.get_package, name)
+			if not ok then
+				table.insert(unknown, name)
+			elseif pkg.spec.neovim and pkg.spec.neovim.lspconfig then
+				provided[pkg.spec.neovim.lspconfig] = true
+			end
+		end
+		eq(unknown, {}, "mason_packages not in the Mason registry")
+		local missing = vim.tbl_filter(function(server)
+			return not provided[server]
+		end, constants.lsp_servers)
+		eq(missing, {}, "lsp_servers without a package in mason_packages")
+	end)
+
+	test("every formatter and linter is a Mason package", function()
+		local packages = require("core.constants").mason_packages
+		local missing = {}
+		local function check(kind, by_ft)
+			for ft, names in pairs(by_ft) do
+				for _, name in ipairs(names) do
+					if not vim.list_contains(packages, name) then
+						table.insert(missing, ("%s %s (%s)"):format(kind, name, ft))
+					end
+				end
+			end
+		end
+		check("formatter", require("conform").formatters_by_ft)
+		check("linter", require("lint").linters_by_ft)
+		table.sort(missing)
+		eq(missing, {}, "not in mason_packages")
+	end)
+
 	test("no errors were reported during the test run", function()
 		no_errors(errors, "errors")
 	end)
