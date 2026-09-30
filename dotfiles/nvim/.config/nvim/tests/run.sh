@@ -21,7 +21,9 @@ ENV_DIR="${NVIM_TEST_ENV:-${XDG_CACHE_HOME:-$HOME/.cache}/nvim-config-test}"
 
 # Pinned like the plugins; bump deliberately.
 MINI_TEST_COMMIT=3cc4c29be99531b3fc4fb99f3fa964b492166728
-MASON_TOOLS=(lua-language-server stylua)
+# Mason installs the latest versions. A new rust-analyzer may need a newer
+# Rust toolchain than the one pinned in tests/Dockerfile.
+MASON_TOOLS=(lua-language-server stylua rust-analyzer)
 
 SUITE=smoke
 FRESH=0
