@@ -69,8 +69,13 @@ local function run()
 		eq(missing, {}, "missing plugins")
 	end)
 
+	-- Read once for both lockfile tests; a broken file fails them, not the run
+	local lock_ok, lock = pcall(function()
+		return vim.json.decode(table.concat(vim.fn.readfile(vim.fn.stdpath("config") .. "/lazy-lock.json"), "\n"))
+	end)
+
 	test("lockfile covers every plugin", function()
-		local lock = vim.json.decode(table.concat(vim.fn.readfile(vim.fn.stdpath("config") .. "/lazy-lock.json"), "\n"))
+		assert(lock_ok, "can't read lazy-lock.json: " .. tostring(lock))
 		local unlocked = {}
 		for _, p in ipairs(plugins) do
 			if not lock[p.name] then
@@ -78,6 +83,22 @@ local function run()
 			end
 		end
 		eq(unlocked, {}, "plugins missing from lazy-lock.json")
+	end)
+
+	test("lockfile has no stale entries", function()
+		assert(lock_ok, "can't read lazy-lock.json: " .. tostring(lock))
+		local names = {}
+		for _, p in ipairs(plugins) do
+			names[p.name] = true
+		end
+		local stale = {}
+		for name in pairs(lock) do
+			if not names[name] then
+				table.insert(stale, name)
+			end
+		end
+		table.sort(stale)
+		eq(stale, {}, "lazy-lock.json entries for plugins not in the spec")
 	end)
 
 	test("VeryLazy plugins load without errors", function()
