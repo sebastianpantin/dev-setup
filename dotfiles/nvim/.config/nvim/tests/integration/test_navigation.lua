@@ -10,14 +10,29 @@ local function any_window_with_filetype(ft)
 	end)]]):format(ft)
 end
 
-T["<leader>ff opens Telescope file finder"] = function()
-	child.type_keys("<Space>ff")
-	H.wait_for(child, "vim.bo.filetype == 'TelescopePrompt'")
-end
-
-T["<C-p> opens Telescope keymap search"] = function()
-	child.type_keys("<C-p>")
-	H.wait_for(child, "vim.bo.filetype == 'TelescopePrompt'")
+-- Every keymap in lua/core/telescope_keymaps.lua, with its picker's title
+for _, case in ipairs({
+	{ "<Space>fr", "Oldfiles" },
+	{ "<Space>ff", "Find Files" },
+	{ "<Space>fp", "Workspaces" },
+	{ "<Space>sh", "Help" },
+	{ "<Space>sw", "Find Word (vim)" }, -- the word under the cursor in init.lua
+	{ "<Space>sg", "Live Grep" },
+	{ "<Space>sd", "Workspace Diagnostics" },
+	{ "<C-p>", "Key Maps" },
+}) do
+	local keys, title = case[1], case[2]
+	T[keys:gsub("<Space>", "<leader>") .. " opens Telescope " .. title] = function()
+		if keys == "<Space>sd" then
+			-- The diagnostics picker doesn't open when there are none
+			child.lua([[vim.diagnostic.set(vim.api.nvim_create_namespace("test"), 0, {
+				{ lnum = 0, col = 0, message = "warning", severity = vim.diagnostic.severity.WARN },
+			})]])
+		end
+		child.type_keys(keys)
+		H.wait_for(child, "vim.bo.filetype == 'TelescopePrompt'")
+		eq(child.lua_get("require('telescope.actions.state').get_current_picker(vim.api.nvim_get_current_buf()).prompt_title"), title)
+	end
 end
 
 T["<leader>e toggles Neo-tree"] = function()
