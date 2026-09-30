@@ -95,6 +95,12 @@ if ((${#MISSING_TOOLS[@]})); then
 	echo "==> Installing ${MISSING_TOOLS[*]} with Mason"
 	step nvim --headless "+MasonInstall ${MISSING_TOOLS[*]}" +qa
 fi
+# The smoke tests read package specs from the registry, which MasonInstall
+# downloads; fetch it if the tools were installed some other way.
+if [[ ! -e "$XDG_DATA_HOME/nvim/mason/registries/github/mason-org/mason-registry/registry.json" ]]; then
+	echo "==> Downloading the Mason registry"
+	step nvim --headless "+lua require('mason-registry').refresh()" +qa
+fi
 
 if ((SETUP_ONLY)); then
 	exit 0
