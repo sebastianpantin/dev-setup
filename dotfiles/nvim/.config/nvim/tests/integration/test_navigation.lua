@@ -38,6 +38,12 @@ end
 T["<leader>e toggles Neo-tree"] = function()
 	child.type_keys("<Space>e")
 	H.wait_for(child, any_window_with_filetype("neo-tree"))
+	-- The window gets its filetype before Neo-tree records it in its state;
+	-- toggling in between would open it again instead of closing it.
+	H.wait_for(
+		child,
+		"require('neo-tree.ui.renderer').window_exists(require('neo-tree.sources.manager').get_state('filesystem'))"
+	)
 	child.type_keys("<Space>e")
 	H.wait_for(child, "not " .. any_window_with_filetype("neo-tree"))
 end
