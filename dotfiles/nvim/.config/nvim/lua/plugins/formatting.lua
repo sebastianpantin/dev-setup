@@ -37,16 +37,24 @@ return {
 				python = { "mypy" },
 			}
 			lint.linters.mypy = vim.tbl_deep_extend("force", lint.linters.mypy or {}, {
+				-- Only called when python_tool found a mypy (see the autocmd below)
 				cmd = function()
-					local venv = vim.fn.findfile(".venv/bin/mypy", vim.fn.getcwd() .. ";")
-					if venv ~= "" then
-						return venv
-					end
-					return "mypy"
+					return require("helpers.util").python_tool(vim.fn.expand("%:p:h"), "mypy")
 				end,
+				-- Check against the project's .venv packages, not mason's own environment
+				args = vim.list_extend(vim.deepcopy(lint.linters.mypy.args), {
+					function()
+						local python = require("helpers.util").venv_python(vim.fn.expand("%:p:h"))
+						return "--python-executable=" .. (python or vim.fn.exepath("python3"))
+					end,
+				}),
 			})
 			vim.api.nvim_create_autocmd({ "BufWritePost" }, {
 				callback = function()
+					-- Skip mypy in projects that do not install it
+					if vim.bo.filetype == "python" and not require("helpers.util").python_tool(vim.fn.expand("%:p:h"), "mypy") then
+						return
+					end
 					lint.try_lint()
 				end,
 			})

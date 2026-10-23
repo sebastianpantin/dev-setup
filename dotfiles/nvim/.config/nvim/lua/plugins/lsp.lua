@@ -16,6 +16,12 @@ local function on_lsp_attach(args)
 	map("<leader>ls", function()
 		require("telescope.builtin").lsp_document_symbols()
 	end, "Document symbols")
+	map("<leader>ci", function()
+		require("telescope.builtin").lsp_incoming_calls()
+	end, "Incoming calls")
+	map("<leader>co", function()
+		require("telescope.builtin").lsp_outgoing_calls()
+	end, "Outgoing calls")
 
 	map("gd", function()
 		require("telescope.builtin").lsp_definitions()
@@ -110,6 +116,48 @@ return {
 			-- Shared capabilities (blink.cmp)
 			vim.lsp.config("*", {
 				capabilities = require("blink.cmp").get_lsp_capabilities(),
+			})
+
+			-- ruff from the project's .venv so the version matches its CI; not started in
+			-- projects that do not install it (see helpers.util.python_tool).
+			-- Set here, not in lsp/ruff.lua, because nvim-lspconfig's lsp/ruff.lua would win.
+			vim.lsp.config("ruff", {
+				root_dir = function(bufnr, on_dir)
+					local file_dir = vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr))
+					if require("helpers.util").python_tool(file_dir, "ruff") then
+						on_dir(vim.fs.root(bufnr, { "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" }) or file_dir)
+					end
+				end,
+				cmd = function(dispatchers, config)
+					local ruff = require("helpers.util").python_tool(config.root_dir, "ruff")
+					return vim.lsp.rpc.start({ ruff, "server" }, dispatchers, { cwd = config.root_dir })
+				end,
+			})
+
+			-- basedpyright from the project's .venv when it has one, else mason's. It reads
+			-- the project's interpreter and packages, so any Python version works.
+			-- Type checking is off unless the project configures it ([tool.basedpyright]
+			-- or pyrightconfig.json win over these settings); mypy covers it otherwise.
+			vim.lsp.config("basedpyright", {
+				cmd = function(dispatchers, config)
+					local server = require("helpers.util").python_tool(config.root_dir, "basedpyright-langserver")
+					return vim.lsp.rpc.start(
+						{ server or "basedpyright-langserver", "--stdio" },
+						dispatchers,
+						{ cwd = config.root_dir }
+					)
+				end,
+				before_init = function(_, config)
+					local python = config.root_dir and require("helpers.util").venv_python(config.root_dir)
+					if python then
+						config.settings.python = { pythonPath = python }
+					end
+				end,
+				settings = {
+					basedpyright = {
+						analysis = { typeCheckingMode = "off" },
+					},
+				},
 			})
 
 			-- Enable all configured LSP servers

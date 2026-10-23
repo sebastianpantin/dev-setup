@@ -3,7 +3,7 @@ local M = {}
 -- LSP server names (for vim.lsp.enable)
 M.lsp_servers = {
 	"lua_ls",
-	"pylsp",
+	"basedpyright",
 	"ruff",
 	"csharp_ls",
 	"dockerls",
@@ -19,7 +19,7 @@ M.lsp_servers = {
 M.mason_packages = {
 	-- LSP servers
 	"lua-language-server",
-	"python-lsp-server",
+	"basedpyright",
 	"ruff",
 	"csharp-language-server",
 	"dockerfile-language-server",
