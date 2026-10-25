@@ -26,12 +26,13 @@ return {
 			wk.add({
 				{ "<leader>b", group = "Buffer" },
 				{ "<leader>c", group = "Code" },
-				{ "<leader>d", group = "Delete/Close" },
+				{ "<leader>d", group = "Debug" },
 				{ "<leader>f", group = "File" },
 				{ "<leader>g", group = "Git" },
 				{ "<leader>l", group = "LSP" },
 				{ "<leader>q", group = "Quit" },
 				{ "<leader>s", group = "Search" },
+				{ "<leader>t", group = "Test" },
 				{ "<leader>u", group = "UI" },
 				{ "<leader>v", "<cmd>vsplit<CR>", desc = "Split" },
 			})

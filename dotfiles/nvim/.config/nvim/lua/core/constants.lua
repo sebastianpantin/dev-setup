@@ -37,6 +37,7 @@ M.mason_packages = {
 	"yamlfix",
 	-- Debug adapters
 	"codelldb",
+	"debugpy",
 }
 
 -- Treesitter parsers to install
