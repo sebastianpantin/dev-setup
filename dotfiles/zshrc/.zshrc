@@ -53,9 +53,14 @@ gbdone() {
 # Source local machine-specific configuration if it exists
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
-# bun completions
-[ -s "/home/plebbut/.bun/_bun" ] && source "/home/plebbut/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Android
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH="$HOME/.deno/bin:$PATH"
