@@ -10,7 +10,7 @@ fi
 ZSH_PATH=$(which zsh)
 
 # Check if zsh is already the default shell
-if [ "$SHELL" = "$ZSH_PATH" ]; then
+if [ "$(getent passwd "$USER" | cut -d: -f7)" = "$ZSH_PATH" ]; then
     echo "Zsh is already your default shell."
     exit 0
 fi
@@ -21,6 +21,9 @@ if ! grep -q "^$ZSH_PATH$" /etc/shells; then
 fi
 
 # Change the default shell to zsh
-chsh -s "$ZSH_PATH"
+if ! sudo chsh -s "$ZSH_PATH" "$USER"; then
+    echo "Failed to change the default shell to zsh."
+    exit 1
+fi
 
 echo "Default shell changed to zsh. Please log out and log back in for the change to take effect."

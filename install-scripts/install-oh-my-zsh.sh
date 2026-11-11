@@ -6,8 +6,11 @@ if ! command -v zsh &> /dev/null; then
     exit 1
 fi
 
+# .zshrc expects oh-my-zsh here, not in the installer's default ~/.oh-my-zsh
+export ZSH="$HOME/.config/.oh-my-zsh"
+
 # Check if oh-my-zsh is already installed
-if [ -d "$HOME/.config/.oh-my-zsh" ]; then
+if [ -d "$ZSH" ]; then
     echo "oh-my-zsh is already installed."
     exit 0
 fi
@@ -15,16 +18,7 @@ fi
 # Install oh-my-zsh
 echo "Installing oh-my-zsh..."
 
-# Backup .zshrc if it exists
-if [ -f "$HOME/.zshrc" ]; then
-    cp "$HOME/.zshrc" "$HOME/.zshrc.backup"
-fi
-
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-
-# Restore original .zshrc
-if [ -f "$HOME/.zshrc.backup" ]; then
-    mv "$HOME/.zshrc.backup" "$HOME/.zshrc"
-fi
+# --keep-zshrc leaves the stowed .zshrc symlink in place
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 
 echo "oh-my-zsh installed successfully!"

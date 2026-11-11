@@ -1,6 +1,5 @@
 # Export path
 export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
-export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.config/.oh-my-zsh"
@@ -11,7 +10,7 @@ ZSH_THEME=""
 source $ZSH_CUSTOM/catppuccin_macchiato-zsh-syntax-highlighting.zsh
 
 # Plugins
-plugins=(git zsh-nvm zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
 # Init different stuff
@@ -20,7 +19,7 @@ eval "$(zoxide init zsh)"
 
 # Aliases
 alias cat='bat'
-alias ls='exa -l'
+alias ls='eza -l'
 
 # Git aliases and functions
 alias gsave='git add -A && git commit -m "SAVEPOINT"'
@@ -60,7 +59,12 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Android
-export ANDROID_HOME=$HOME/Android/Sdk
-export PATH=$PATH:$ANDROID_HOME/emulator
-export PATH=$PATH:$ANDROID_HOME/platform-tools
+# Set ANDROID_HOME in ~/.zshrc.local to use an SDK elsewhere
+export ANDROID_HOME="${ANDROID_HOME:-$HOME/Android/Sdk}"
+export ANDROID_SDK_ROOT="$ANDROID_HOME"
+export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator"
+export JAVA_HOME="/usr/lib/jvm/java-17-openjdk"
+export PATH="$JAVA_HOME/bin:$PATH"
+
+# Deno
 export PATH="$HOME/.deno/bin:$PATH"

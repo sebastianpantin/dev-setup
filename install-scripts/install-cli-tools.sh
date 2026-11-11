@@ -7,10 +7,6 @@ source "$SOURCE_DIR/utils.sh"
 # Install CLI tools
 echo "Installing CLI tools..."
 
-install_package starship
-install_package zoxide
-install_package fzf
-install_package bat
-install_package exa
+install_package starship zoxide fzf bat eza
 
 echo "All CLI tools installed successfully!"

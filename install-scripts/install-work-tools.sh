@@ -4,14 +4,9 @@
 SOURCE_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SOURCE_DIR/utils.sh"
 
-# Install just
-if ! command -v just &> /dev/null; then
-    echo "Installing just..."
-    install_package just
-    echo "just installed successfully!"
-else
-    echo "just is already installed."
-fi
+# Install packaged tools in one go; --needed skips the ones already there
+install_package just git azure-cli docker kubectl minikube terraform bun deno
+ensure_group docker
 
 # Install fnm (Fast Node Manager)
 if ! command -v fnm &> /dev/null; then
@@ -50,23 +45,6 @@ else
     echo "uv is already installed."
 fi
 
-# Install git
-if ! command -v git &> /dev/null; then
-    echo "Installing git..."
-    install_package git
-    echo "git installed successfully"
-else
-    echo "git is already installed"
-fi
-
-# Install Azure CLI
-if ! command -v az &> /dev/null; then
-    echo "Installing Azure CLI..."
-    install_package azure-cli
-    echo "Azure CLI installed successfully"
-else
-    echo "Azure CLI is already installed"
-fi
 # Install devspace
 if ! command -v devspace &> /dev/null; then
     echo "Installing devspace..."
@@ -76,54 +54,6 @@ if ! command -v devspace &> /dev/null; then
     echo "devspace installed successfully!"
 else
     echo "devspace is already installed."
-fi
-
-# Install docker
-if ! command -v docker &> /dev/null; then
-    echo "Installing docker..."
-    install_package docker 
-    # Add user to docker group
-    echo "Adding $USER to docker group..."
-    sudo usermod -aG docker "$USER"
-    echo "Docker installed successfully! You'll need to log out and back in for group changes to take effect."
-else
-    echo "docker is already installed."
-    # Check if user is in docker group
-    if ! groups "$USER" | grep -q docker; then
-        echo "Adding $USER to docker group..."
-        sudo usermod -aG docker "$USER"
-echo "You'll need to log out and back in for group changes to take effect."
-    fi
-fi
-
-# Install kubectl
-if ! command -v kubectl &> /dev/null; then
-    echo "Installing kubectl..."
-    curl -LO "https://dl.k8s.io/release/v1.34.0/bin/linux/amd64/kubectl"
-    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-    rm kubectl
-    echo "kubectl installed successfully!"
-else
-    echo "kubectl is already installed."
-fi
-
-# Install minikube
-if ! command -v minikube &> /dev/null; then
-    echo "Installing minikube..."
-    curl -LO https://storage.googleapis.com/minikube/releases/v1.33.1/minikube-linux-amd64
-    sudo install minikube-linux-amd64 /usr/bin/minikube && rm minikube-linux-amd64
-    echo "minikube installed successfully!"
-else
-    echo "minikube is already installed."
-fi
-
-# Install terraform
-if ! command -v terraform &> /dev/null; then
-    echo "Installing terraform..."
-    install_package terraform
-    echo "terraform installed successfully!"
-else
-    echo "terraform is already installed."
 fi
 
 # Install .NET (multiple versions: 7, 8, 9, 10)
@@ -137,10 +67,7 @@ if ! command -v dotnet &> /dev/null || [ ! -d "$HOME/.dotnet" ]; then
         sudo apt install -y libc6 libgcc-s1 libgssapi-krb5-2 libicu-dev libssl-dev libstdc++6 zlib1g
     else
         # For Arch, these packages have different names
-        install_package icu
-        install_package krb5
-        install_package openssl
-        install_package zlib
+        install_package icu krb5 openssl zlib
     fi
     
     # Download and run the dotnet-install script
