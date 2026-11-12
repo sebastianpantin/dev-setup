@@ -13,6 +13,11 @@ USER tester
 # Login sessions set this; docker does not.
 ENV USER=tester
 WORKDIR /home/tester
+# Stand in for the fcitx5 config Omarchy ships, so the install has to replace a
+# stock keyboard.conf without touching the rest of the directory.
+RUN mkdir -p .config/fcitx5/conf \
+	&& echo '# stock' > .config/fcitx5/conf/keyboard.conf \
+	&& echo '# stock' > .config/fcitx5/conf/xcb.conf
 COPY --chown=tester:tester install-scripts /home/tester/programming/dev-setup/install-scripts
 COPY --chown=tester:tester dotfiles /home/tester/programming/dev-setup/dotfiles
 
