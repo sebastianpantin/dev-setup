@@ -319,14 +319,23 @@ local function run()
 		vim.fn.mkdir(project .. "/src", "p")
 		vim.fn.writefile({ "#!/bin/sh" }, project .. "/.venv/bin/mypy")
 		vim.fn.setfperm(project .. "/.venv/bin/mypy", "rwxr-xr-x")
-		local cwd = vim.fn.getcwd()
+		-- cmd() looks up from the current buffer's directory, not the cwd
+		local outside = vim.fn.tempname()
+		vim.fn.mkdir(outside, "p")
+		local prev_buf = vim.api.nvim_get_current_buf()
 		local ok, err = pcall(function()
-			vim.fn.chdir(project .. "/src")
-			eq(vim.fn.fnamemodify(cmd(), ":p"), project .. "/.venv/bin/mypy", "cmd inside the project")
-			vim.fn.chdir(vim.fn.fnamemodify(project, ":h"))
+			vim.cmd.edit(vim.fn.fnameescape(project .. "/src/main.py"))
+			eq(cmd(), project .. "/.venv/bin/mypy", "cmd inside the project")
+			vim.cmd.edit(vim.fn.fnameescape(outside .. "/main.py"))
 			eq(cmd(), "mypy", "cmd outside the project")
 		end)
-		vim.fn.chdir(cwd)
+		vim.api.nvim_set_current_buf(prev_buf)
+		for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+			local name = vim.api.nvim_buf_get_name(buf)
+			if vim.startswith(name, project) or vim.startswith(name, outside) then
+				vim.api.nvim_buf_delete(buf, { force = true })
+			end
+		end
 		assert(ok, err)
 	end)
 
