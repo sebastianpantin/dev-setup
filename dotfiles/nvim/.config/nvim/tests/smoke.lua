@@ -199,8 +199,10 @@ local function run()
 
 	test("core options are set", function()
 		eq(vim.g.mapleader, " ", "mapleader")
-		eq(vim.o.expandtab, true, "expandtab")
-		eq(vim.o.shiftwidth, 4, "shiftwidth")
+		-- Global values: guess-indent changes these per buffer to match the file,
+		-- e.g. the tab-indented init.lua opened by an earlier test.
+		eq(vim.go.expandtab, true, "expandtab")
+		eq(vim.go.shiftwidth, 4, "shiftwidth")
 		eq(vim.o.relativenumber, true, "relativenumber")
 		eq(vim.o.clipboard, "unnamedplus", "clipboard")
 		eq(vim.o.signcolumn, "yes", "signcolumn")
