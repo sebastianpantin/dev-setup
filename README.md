@@ -15,6 +15,15 @@ Each `install-*.sh` script can also be run on its own.
 
 Machine-specific shell settings go in `~/.zshrc.local`, which `.zshrc` sources and the repo does not track.
 
+## Claude Code
+
+`install-claude.sh` installs Claude Code and sets up `~/.claude` from `claude/`:
+
+- `CLAUDE.md` is linked, so edits to the global rules land in the repo.
+- `settings.json` is merged into the machine's own settings, with the repo's values winning. Claude Code and plugins add machine-specific entries such as hook paths, so the file is not linked.
+
+Plugins listed in `settings.json` install from their marketplaces the first time Claude Code starts. Run `claude` and log in afterwards; skills and connectors that belong to the account come with the login.
+
 ## Testing
 
-`install-scripts/tests/docker.sh` runs the shell part of the install (CLI tools, stow, zsh, dotfiles, oh-my-zsh, login shell) in a fresh Arch container and checks the result. Work tools, Android and Hyprland overrides need the AUR, large downloads or a real Omarchy session, so they are left out.
+`install-scripts/tests/docker.sh` runs the shell part of the install (CLI tools, stow, zsh, dotfiles, oh-my-zsh, Claude Code, login shell) in a fresh Arch container and checks the result. Work tools, Android and Hyprland overrides need the AUR, large downloads or a real Omarchy session, so they are left out.

@@ -7,6 +7,10 @@ set -uo pipefail
 SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd /tmp || exit 1
 
+# Claude Code settings a machine already has must survive the install.
+mkdir -p ~/.claude
+echo '{"hooks": {"SessionStart": []}, "theme": "light"}' > ~/.claude/settings.json
+
 # Same order as install-all.sh, minus the scripts that can't run here.
 scripts=$(grep -oP '^\./\K[a-z-]+(?=\.sh)' "$SCRIPTS/install-all.sh" \
 	| grep -vxF -e install-work-tools -e install-android -e install-hyprland-overrides)
@@ -33,5 +37,10 @@ check "zsh is login shell" '[ "$(getent passwd "$USER" | cut -d: -f7)" = "$(comm
 check "zsh starts cleanly" '[ -z "$(zsh -i -c exit 2>&1)" ]'
 check "plugins load" 'zsh -i -c "(( \$+functions[_zsh_autosuggest_start] ))"'
 check "ls alias uses eza" 'zsh -i -c "ls ~"'
+check "claude is installed" '[ -x ~/.local/bin/claude ]'
+check "global CLAUDE.md is a symlink" '[ -L ~/.claude/CLAUDE.md ]'
+check "claude plugins are enabled" 'jq -e ".enabledPlugins[\"caveman@caveman\"]" ~/.claude/settings.json'
+check "repo settings win over local ones" '[ "$(jq -r .theme ~/.claude/settings.json)" = dark-ansi ]'
+check "local claude settings are kept" 'jq -e ".hooks.SessionStart" ~/.claude/settings.json'
 
 exit $failures

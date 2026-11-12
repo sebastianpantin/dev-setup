@@ -1,0 +1,37 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "model": "opus",
+  "enabledPlugins": {
+    "caveman@caveman": true,
+    "context-mode@context-mode": true,
+    "mattpocock-skills@claude-plugins-official": true,
+    "frontend-design-audit@frontend-design-audit": true
+  },
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    },
+    "context-mode": {
+      "source": {
+        "source": "github",
+        "repo": "mksglu/context-mode"
+      }
+    },
+    "frontend-design-audit": {
+      "source": {
+        "source": "github",
+        "repo": "mistyhx/frontend-design-audit"
+      }
+    }
+  },
+  "effortLevel": "medium",
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark-ansi",
+  "agentPushNotifEnabled": true
+}
