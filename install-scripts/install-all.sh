@@ -16,6 +16,7 @@ echo "Installing all..."
 ./install-zsh.sh
 ./install-dotfiles.sh
 ./install-oh-my-zsh.sh
+./install-claude.sh
 ./install-work-tools.sh
 ./install-android.sh
 ./install-hyprland-overrides.sh

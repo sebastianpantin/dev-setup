@@ -20,5 +20,6 @@ RUN mkdir -p .config/fcitx5/conf \
 	&& echo '# stock' > .config/fcitx5/conf/xcb.conf
 COPY --chown=tester:tester install-scripts /home/tester/programming/dev-setup/install-scripts
 COPY --chown=tester:tester dotfiles /home/tester/programming/dev-setup/dotfiles
+COPY --chown=tester:tester claude /home/tester/programming/dev-setup/claude
 
 CMD ["/home/tester/programming/dev-setup/install-scripts/tests/run.sh"]
