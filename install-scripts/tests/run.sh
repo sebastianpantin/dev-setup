@@ -24,6 +24,9 @@ check() {
 echo "=== checks"
 check ".zshrc is a stow symlink" '[ -L ~/.zshrc ]'
 check "nvim config is stowed" '[ -L ~/.config/nvim ]'
+check "ghostty config is stowed" '[ -L ~/.config/ghostty ]'
+check "fcitx5 keyboard.conf is stowed" '[ -L ~/.config/fcitx5/conf/keyboard.conf ]'
+check "rest of fcitx5 config stays local" '[ -d ~/.config/fcitx5 ] && [ ! -L ~/.config/fcitx5 ] && [ ! -L ~/.config/fcitx5/conf ] && [ -f ~/.config/fcitx5/conf/xcb.conf ]'
 check "oh-my-zsh in ~/.config" '[ -f ~/.config/.oh-my-zsh/oh-my-zsh.sh ]'
 check "no stray ~/.oh-my-zsh" '[ ! -e ~/.oh-my-zsh ]'
 check "zsh is login shell" '[ "$(getent passwd "$USER" | cut -d: -f7)" = "$(command -v zsh)" ]'
