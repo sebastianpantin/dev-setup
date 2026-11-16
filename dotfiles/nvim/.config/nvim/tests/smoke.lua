@@ -197,6 +197,30 @@ local function run()
 		eq(vim.g.colors_name, "catppuccin-mocha", "colors_name")
 	end)
 
+	test("colorscheme follows the Omarchy theme", function()
+		local omarchy_theme = require("helpers.omarchy_theme")
+		local state, omarchy = vim.fn.tempname(), vim.fn.tempname()
+		vim.fn.mkdir(state .. "/omarchy/current/theme", "p")
+		vim.fn.writefile({
+			'return { { "someone/theme.nvim", name = "theme", opts = { style = "x" } },',
+			'  { "LazyVim/LazyVim", opts = { colorscheme = "theme-night" } } }',
+		}, state .. "/omarchy/current/theme/neovim.lua")
+		vim.fn.mkdir(omarchy .. "/themes/other", "p")
+		vim.fn.writefile({ 'return { { "else/other.nvim" } }' }, omarchy .. "/themes/other/neovim.lua")
+
+		local saved = { vim.env.XDG_STATE_HOME, vim.env.OMARCHY_PATH }
+		vim.env.XDG_STATE_HOME, vim.env.OMARCHY_PATH = state, omarchy
+		local ok, err = pcall(function()
+			eq(omarchy_theme.colorscheme(), "theme-night", "colorscheme")
+			eq(omarchy_theme.plugins(), {
+				{ "else/other.nvim", lazy = true },
+				{ "someone/theme.nvim", name = "theme", lazy = true },
+			}, "plugins")
+		end)
+		vim.env.XDG_STATE_HOME, vim.env.OMARCHY_PATH = saved[1], saved[2]
+		assert(ok, err)
+	end)
+
 	test("core options are set", function()
 		eq(vim.g.mapleader, " ", "mapleader")
 		-- Global values: guess-indent changes these per buffer to match the file,
