@@ -7,8 +7,6 @@ return {
 		"nvim-lualine/lualine.nvim",
 		event = "VeryLazy",
 		config = function()
-			local colorscheme = require("helpers.colorscheme")
-			local lualine_theme = colorscheme == "default" and "auto" or colorscheme
 			local icons = { Error = " ", Warn = " ", Hint = " ", Info = " " }
 
 			local diagnostics = {
@@ -66,7 +64,9 @@ return {
 
 			require("lualine").setup({
 				options = {
-					theme = lualine_theme,
+					-- "auto" uses the colorscheme's own lualine theme when it has one,
+					-- and follows colorscheme changes.
+					theme = "auto",
 					component_separators = { left = "", right = "" },
 					section_separators = { left = "", right = "" },
 					disabled_filetypes = { "alpha", "dashboard", "lazy" },

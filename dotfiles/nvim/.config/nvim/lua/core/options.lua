@@ -32,5 +32,5 @@ for opt, val in pairs(opts) do
 end
 
 -- Set other options
-local colorscheme = require("helpers.colorscheme")
-vim.cmd.colorscheme(colorscheme)
+-- Colorscheme, following the Omarchy theme
+require("helpers.omarchy_theme").setup()
